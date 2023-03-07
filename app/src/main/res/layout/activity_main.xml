@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+
+    <TextView
+        android:id="@+id/Main_Loading"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:text="Loading ···"
+        android:textColor="@color/black"
+        android:textStyle="bold"
+        android:letterSpacing="0.2"
+        android:textSize="40sp"
+        android:gravity="center"
+        />
+    <!--背景图-->
+    <ImageView
+        android:id="@+id/Main_Bg"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="fitXY"
+        />
+
+    <RelativeLayout
+        android:id="@+id/Main_Top"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/main_top"
+            android:padding="20dp">
+
+            <ImageView
+                android:layout_marginTop="20dp"
+                android:id="@+id/Main_more"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:padding="7dp"
+                android:src="@mipmap/list" />
+
+            <TextView
+                android:layout_marginTop="25dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@+id/Main_more"
+                android:text="更多"
+                android:textColor="@color/white"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+
+        </RelativeLayout>
+
+        <!--控制按钮-->
+        <RelativeLayout
+            android:layout_centerHorizontal="true"
+            android:id="@+id/Main_BtArea"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <Button
+                android:id="@+id/Main_GetPic"
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_marginBottom="140sp"
+                android:layout_toLeftOf="@+id/Main_Or"
+                android:layout_marginRight="20dp"
+                android:background="@drawable/main_left"
+                android:fontFamily="sans-serif-black"
+                android:letterSpacing="0.2"
+                android:text="获取图片"
+                android:textColor="@color/white"
+                android:textSize="15sp" />
+
+            <TextView
+                android:id="@+id/Main_Or"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_alignParentBottom="true"
+                android:layout_centerHorizontal="true"
+                android:layout_marginBottom="140sp"
+                android:background="@drawable/main_or"
+                android:gravity="center"
+                android:padding="10dp"
+                android:text="O R "
+                android:textColor="@color/black"
+                android:textStyle="bold" />
+
+            <Button
+                android:id="@+id/Main_GetText"
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_marginBottom="140sp"
+                android:background="@drawable/main_right"
+                android:fontFamily="sans-serif-black"
+                android:layout_toEndOf="@+id/Main_Or"
+                android:layout_marginStart="20dp"
+                android:letterSpacing="0.2"
+                android:text="寻找文案"
+                android:textColor="@color/white"
+                android:textSize="15sp" />
+        </RelativeLayout>
+
+        <!--日期和文字-->
+        <RelativeLayout
+            android:id="@+id/Main_TextArea"
+            android:layout_width="wrap_content"
+            android:layout_height="500dp"
+            android:layout_alignParentBottom="true"
+            android:background="@drawable/main_text"
+            android:visibility="invisible">
+
+            <!--时间显示-->
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_above="@+id/Main_layout_content"
+                android:layout_marginLeft="20sp"
+                android:layout_marginBottom="30dp">
+
+                <TextView
+                    android:id="@+id/Main_Time"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="12:00"
+                    android:textColor="@color/white"
+                    android:textSize="60sp" />
+
+                <TextView
+                    android:id="@+id/Main_Date"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/Main_Time"
+                    android:text="2023年1月1日  |   星期一"
+                    android:textColor="@color/white"
+                    android:textSize="20sp" />
+            </RelativeLayout>
+
+            <!--诗文内容-->
+            <RelativeLayout
+                android:id="@+id/Main_layout_content"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true">
+
+                <TextView
+                    android:id="@+id/Main_Content"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:layout_marginBottom="40sp"
+                    android:padding="20dp"
+                    android:text="@string/textTest"
+                    android:textColor="@color/white"
+                    android:textSize="30sp" />
+
+                <TextView
+                    android:id="@+id/Main_Origin"
+                    android:layout_width="400dp"
+                    android:singleLine="true"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/Main_Content"
+                    android:padding="30dp"
+                    android:text="———\t\来源：*** 《**诗集》"
+                    android:textColor="@color/white"
+                    android:textSize="15dp" />
+            </RelativeLayout>
+
+        </RelativeLayout>
+
+    </RelativeLayout>
+
+</androidx.cardview.widget.CardView>
