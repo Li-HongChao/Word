@@ -7,6 +7,8 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
 
 import android.Manifest;
 import android.animation.ObjectAnimator;
@@ -28,6 +30,7 @@ import android.os.Message;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.Animation;
@@ -42,10 +45,13 @@ import com.example.entity.Word;
 import com.example.unit.SavePic;
 import com.example.web.PicGet;
 import com.example.web.WordGet;
+import com.google.android.material.navigation.NavigationView;
 
 import java.io.IOException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener {
+public class MainActivity extends AppCompatActivity implements View.OnClickListener, NavigationView.OnNavigationItemSelectedListener {
 
     // 要申请的权限
     private final String[] permissions = {
@@ -73,6 +79,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private boolean pageStatus;
     private Bitmap bitmap;
     private Word word;
+    private DrawerLayout drawer_layout;
+    private NavigationView nav_view;
 
 
     @Override
@@ -104,6 +112,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mainBtArea = findViewById(R.id.Main_BtArea);
         loading = findViewById(R.id.Main_Loading);
         mainTop = findViewById(R.id.Main_Top);
+
+        //设置侧滑栏的监听
+        drawer_layout = findViewById(R.id.drawer_layout);
+        drawer_layout.setOnClickListener(this);
+        //nva菜单的Item点击事件钮监听
+        nav_view = findViewById(R.id.nav_view);
+        nav_view.setNavigationItemSelectedListener(this);
+
 
         content.setOnClickListener(this);
         mainMore.setOnClickListener(this);
@@ -162,6 +178,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     }
                     break;
                 case R.id.Main_more:
+                    Log.d(TAG, "onClick: 对你没点错");
+                    drawer_layout.openDrawer(GravityCompat.START);
                     break;
                 default:
                     //判断是否隐藏文字控件
@@ -178,12 +196,26 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @SuppressLint("SetTextI18n")
     private void setText() {
+        //设置日期
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            LocalDate time = LocalDate.now();
+            int year = time.getYear();
+            int month = time.getMonth().getValue();
+            int day = time.getDayOfMonth();
+            int week = time.getDayOfWeek().getValue();
+            LocalDateTime dateTime  = LocalDateTime.now();
+            mainTime.setText(dateTime.getHour()+":"+dateTime.getMinute());
+            mainDate.setText(year+"年"+month+"月"+day+"日  |  星期 "+week);
+        }
+
+        //设置文字
         cartoon(mainBtArea, "alpha", 1, 0, 200);
         content.setText(word.getContent());
         mainOrigin.setText("——\t\t" + word.getAuthor() + "\t《" + word.getOrigin() + "》");
         content.setText(word.getContent());
         pageStatus = true;
         mainTextArea.setVisibility(View.VISIBLE);
+        Log.d(TAG, "setText: "+word.toString());
         cartoon(mainTextArea, "translationY", 700, 0f, 1000);
     }
 
@@ -226,7 +258,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 if (grantResults[0] != PackageManager.PERMISSION_GRANTED) {
                     //如果没有获取权限，那么可以提示用户去设置界面--->应用权限开启权限
-                  new AlertDialog.Builder(this)
+                    new AlertDialog.Builder(this)
                             .setTitle("存储权限不可用")
                             .setMessage("请在-应用设置-权限-中，允许应用使用存储权限来保存用户数据")
                             .setPositiveButton("立即开启", (dialog1, which) -> {
@@ -252,8 +284,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 case 1:
                     mainBtArea.setVisibility(View.VISIBLE);
                     mainTop.setVisibility(View.VISIBLE);
-                    cartoon(loading,"alpha",1,0,1000);
-                    cartoon(mainBg,"alpha",0,1,1000);
+                    cartoon(loading, "alpha", 1, 0, 1000);
+                    cartoon(mainBg, "alpha", 0, 1, 1000);
                     if (bitmap != null) {
                         mainBg.setImageBitmap(bitmap);
                     } else {
@@ -261,7 +293,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     }
                     break;
                 case 2:
-                    setText();
+                    if (word != null) {
+                        setText();
+                    } else {
+                        Toast.makeText(MainActivity.this, "网络请求错误！", Toast.LENGTH_SHORT).show();
+                    }
+
                     break;
             }
         }
@@ -269,36 +306,44 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     public void getData(int getCode) {
         Log.d(TAG, "getData: 已经执行");
-        if (getCode == GET_PICTURE) {
-            new Thread() {
-                @Override
-                public void run() {
-                    try {
+        new Thread() {
+            @Override
+            public void run() {
+                try {
+                    if (getCode == GET_PICTURE) {
                         bitmap = new PicGet().getPic();
                         Message message = new Message();
                         message.what = 1;
                         handler.sendMessage(message);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }.start();
-        } else if (getCode == GET_WORD) {
-            new Thread() {
-                @Override
-                public void run() {
-                    try {
+                    } else if (getCode == GET_WORD) {
                         word = new WordGet().getData();
                         Message message = new Message();
                         message.what = 2;
                         handler.sendMessage(message);
-                    } catch (Exception e) {
-                        e.printStackTrace();
                     }
+                } catch (Exception e) {
+                    bitmap = null;
+                    e.printStackTrace();
                 }
-            }.start();
-        }
+            }
+        }.start();
     }
 
 
+    @SuppressLint("NonConstantResourceId")
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.one:
+                Toast.makeText(this, "点击有效", Toast.LENGTH_SHORT).show();
+                break;
+            case R.id.two:
+                Toast.makeText(this, "点击有效", Toast.LENGTH_SHORT).show();
+                break;
+            case R.id.three:
+                Toast.makeText(this, "点击有效", Toast.LENGTH_SHORT).show();
+                break;
+        }
+        return false;
+    }
 }
